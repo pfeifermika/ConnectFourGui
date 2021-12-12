@@ -1,0 +1,14 @@
+## IntellijIDEA
+
+.idea
+*.iml
+*.ipr
+out/
+
+
+target
+
+# Project exclude paths
+/.gradle/
+/build/
+/build/classes/java/main/
