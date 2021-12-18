@@ -4,7 +4,7 @@ public class Minimax {
 
 
     public int calculateMove(GameBoard board){
-        int depth = board.level;
+
 
 
 

@@ -1,6 +1,7 @@
 package connectfour.shell;
 
 import connectfour.model.Board;
+import connectfour.model.Coordinates2D;
 import connectfour.model.GameBoard;
 import connectfour.model.Player;
 
@@ -17,32 +18,12 @@ public class Shell {
 
     private static Board game;
 
-    private Shell() {} // utility class implies private constructor
+    private Shell() {}
 
     public static void main(String[] args) throws IOException {
-        BufferedReader stdin =
-                new BufferedReader(new InputStreamReader(System.in));
-        test();
+        //BufferedReader stdin =
+        //        new BufferedReader(new InputStreamReader(System.in));
         //execute(stdin);
-    }
-
-    private static void test(){
-        GameBoard gameBoard = new GameBoard();
-        gameBoard.insertChip(0,Player.HUMAN);
-        gameBoard.insertChip(1,Player.HUMAN);
-        gameBoard.insertChip(2,Player.HUMAN);
-        gameBoard.insertChip(3,Player.HUMAN);
-        gameBoard.insertChip(5,Player.HUMAN);
-        gameBoard.insertChip(6,Player.HUMAN);
-        gameBoard.insertChip(2,Player.HUMAN);
-        gameBoard.insertChip(3,Player.HUMAN);
-        gameBoard.insertChip(1,Player.HUMAN);
-        gameBoard.insertChip(2,Player.HUMAN);
-        gameBoard.insertChip(3,Player.HUMAN);
-        gameBoard.insertChip(4,Player.HUMAN);
-        System.out.println(Arrays.toString(gameBoard.countHorizontalGroups(Player.HUMAN)));
-        System.out.println(Arrays.toString(gameBoard.countVerticalGroups(Player.HUMAN)));
-        System.out.println(gameBoard.toString());
     }
 
 

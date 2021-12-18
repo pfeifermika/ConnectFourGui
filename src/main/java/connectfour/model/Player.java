@@ -2,12 +2,20 @@ package connectfour.model;
 
 public enum Player {
 
-    HUMAN(1),
-    COMPUTER(2);
+    HUMAN(1,"X"),
+    COMPUTER(2,"O"),
+    TIE(0,".");
 
-    Player(int id){
+    Player(int id,String symbol){
         this.id = id;
+        this.symbol = symbol;
     }
 
-    public final int id;
+    private final int id;
+    private final String symbol;
+
+    @Override
+    public String toString() {
+        return symbol;
+    }
 }
