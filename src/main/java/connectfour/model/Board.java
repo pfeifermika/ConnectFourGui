@@ -87,7 +87,7 @@ public interface Board extends Cloneable {
      * Gets the coordinates of the {@code CONNECT} tiles which are in a line,
      * i.e., a witness of victory. The left lower corner has the smallest
      * coordinates. Should only be called if {@link #getWinner()} returns a
-     * value unequal {@code null}. Coordinates are 2-tuples of rows x columns.
+     * value unequal {@code null}. Coordinates are 2-tuples of rows row columns.
      *
      * The result may not be unique!
      *
@@ -114,7 +114,7 @@ public interface Board extends Cloneable {
     Board clone();
 
     /**
-     * Gets the string representation of this board as row x column matrix. Each
+     * Gets the string representation of this board as row row column matrix. Each
      * slot is represented by one the three chars '.', 'X', or 'O'. '.' means
      * that the slot currently contains no tile. 'X' means that it contains a
      * tile of the human player. 'O' means that it contains a machine tile. In

@@ -4,12 +4,17 @@ import java.util.*;
 
 public class GameBoard implements Board {
 
-
-    private Player[][] board = new Player[ROWS][COLS];
+    public Player[][] board = new Player[ROWS][COLS];
     private int level = 4;
     private Player firstPlayer = Player.HUMAN;
     int droppedTokens = 0;
     final static int MAX_DROPPED_TOKENS = ROWS * COLS;
+    private final int[] humanGroups = new int[4];
+    private final int[] computerGroups = new int[4];
+
+    static Coordinates2D[] startCoordinates;
+    static Coordinates2D[] directions;
+
 
     public GameBoard() {
         Arrays.stream(board).forEach(row -> Arrays.fill(row, Player.TIE));
@@ -21,64 +26,111 @@ public class GameBoard implements Board {
         this.firstPlayer = firstPlayer;
     }
 
-    /*
-    startpunkte berechnen einmal für ein board
-     */
-    static Coordinates2D[][] startCoordinates;
-    static Coordinates2D[] directions;
 
+    // diagCount = ROWS + COLS - 1
+    //index 0...diagCount für diag up
+    //index COLS - 1 ... diagCount für horizontal rechts
+    //index COLS - 1 ... array.length für diag runter
+    //index diagCount ... array.length für runter
+    public Coordinates2D[] calculateStartCoordinates() {
+        int diagCount = ROWS + COLS - 1;
 
-    private int[] diagUp(){
-        int[] groups = new int[4];
-        int count = 0;
-        int x = 0;
-        int y = 0;
-        Player player = board[x][y];
-        for(int i = 0; i < 4; i++){
-            while (board[x][y] != null){
-                if (board[x][y] == player) {
-                    count++;
-                } else {
-                    groups[Math.min(CONNECT, count)]++;
-                    count = 0;
-                    player = board[x][y];
-                }
-                x++;y++;
-            }
+        ArrayList<Coordinates2D> startCoordinates = new ArrayList<>();
+
+        for (int diag = 0; diag < diagCount; diag++) {
+            int row = Math.max(ROWS - 1 - diag, 0);
+            int col = Math.max(diag - ROWS + 1, 0);
+            startCoordinates.add(new Coordinates2D(row, col));
         }
-        return groups;
+        for (int i = 1; i < COLS; i++) {
+            startCoordinates.add(0, new Coordinates2D(ROWS - 1, i));
+        }
+        return startCoordinates.toArray(Coordinates2D[]::new);
     }
 
-    private int[] calculateHorizontal(Player player) {
-        int[] groups = new int[4];
-        int count = 0;
+    private static final Coordinates2D[] vectors = {
+            new Coordinates2D(1, 0), //vertikal
+            new Coordinates2D(0, 1), //horizontal
+            new Coordinates2D(-1, 1), //diag up
+            new Coordinates2D(1, 1)  //diag down
+    };
 
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
-                if (board[i][j] == player) {
-                    count++;
-                } else {
-                    groups[Math.min(CONNECT, count)]++;
-                    count = 0;
-                }
+    // diagCount = ROWS + COLS - 1
+    //index 0...diagCount für diag up
+    //index COLS - 1 ... diagCount für horizontal rechts
+    //index COLS - 1 ... array.length für diag runter
+    //index diagCount ... array.length für runter
+    public void calcGroups() {
+        int diagCount = ROWS + COLS - 1;
+        //loop over every startingCoordinate
+        for (int j = 0; j < startCoordinates.length; j++) {
+            if (j <= diagCount) {
+                //diag up
+                calcGroupsInRow(startCoordinates[j], vectors[2]);
+            }
+            if (j >= COLS - 1 && j <= diagCount) {
+                //horizontal
+                calcGroupsInRow(startCoordinates[j], vectors[1]);
+            }
+            if (j >= COLS - 1) {
+                //diag runter
+                calcGroupsInRow(startCoordinates[j], vectors[3]);
+            }
+            if (j >= diagCount) {
+                //senkrecht runter
+                calcGroupsInRow(startCoordinates[j], vectors[0]);
             }
         }
-        return groups;
     }
 
+    private void calcGroupsInRow(Coordinates2D start, Coordinates2D incr) {
+        int count = 0;
+        Player player;
+        int row = start.row();
+        int col = start.row();
+        player = board[row][col];
+        //loop over every coordinate in one line/diag
+        while (isInBounds(row, col)) {
+            if (board[row][col] == player) {
+                count++;
+            } else {
+                increaseGroupCount(count, player);
+                count = 0;
+                player = board[row][col];
+            }
+            row += incr.row();
+            col += incr.col();
+        }
+        increaseGroupCount(count, player);
+    }
+
+
+    private void increaseGroupCount(int count, Player player) {
+        if (player == Player.HUMAN) {
+            humanGroups[Math.min(CONNECT, count)]++;
+        } else if (player == Player.COMPUTER) {
+            computerGroups[Math.min(CONNECT, count)]++;
+        }
+    }
 
     /**
      * Checks if a given coordinate is in bounds of the used board.
      * Is 0 indexed.
      *
-     * @param coordinate the coordinate to test
-     * @return true when the vector is in bounds. false otherwise
+     * @param row the row to check
+     * @param col the col to check
+     * @return true when the vector is in bounds, false otherwise.
      */
-    public boolean isInBounds(Coordinates2D coordinate) {
-        return coordinate.x() <= ROWS - 1 && coordinate.x() >= 0 &&
-                coordinate.y() <= COLS - 1 && coordinate.y() >= 0;
+    private boolean isInBounds(int row, int col) {
+        return row <= ROWS - 1 && row >= 0 &&
+                col <= COLS - 1 && col >= 0;
     }
 
+
+    public boolean isInBounds(Coordinates2D coordinate) {
+        return coordinate.row() <= ROWS - 1 && coordinate.row() >= 0 &&
+                coordinate.col() <= COLS - 1 && coordinate.col() >= 0;
+    }
 
 
     /**
@@ -110,7 +162,7 @@ public class GameBoard implements Board {
      * Gets the coordinates of the {@code CONNECT} tiles which are in a line,
      * i.e., a witness of victory. The left lower corner has the smallest
      * coordinates. Should only be called if {@link #getWinner()} returns a
-     * value unequal {@code null}. Coordinates are 2-tuples of rows x columns.
+     * value unequal {@code null}. Coordinates are 2-tuples of rows row columns.
      * <p>
      * The result may not be unique!
      *

@@ -1,10 +1,10 @@
 package connectfour.model;
 
-public record Coordinates2D(int x, int y) {
+public record Coordinates2D(int row, int col) {
 
 
     @Override
     public String toString() {
-        return "(" + (x + 1) + ", " + (y + 1) + ")";
+        return "(" + row + ", " + col + ")";
     }
 }

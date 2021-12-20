@@ -7,7 +7,6 @@ import connectfour.model.Player;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 
 
@@ -24,6 +23,23 @@ public class Shell {
         //BufferedReader stdin =
         //        new BufferedReader(new InputStreamReader(System.in));
         //execute(stdin);
+        GameBoard gameBoard = new GameBoard();
+
+        Coordinates2D[] cord = gameBoard.calculateStartCoordinates();
+
+
+        System.out.println(Arrays.deepToString(cord));
+
+        for (Coordinates2D coordinates2D : cord) {
+            int x = coordinates2D.row();
+            int y = coordinates2D.col();
+            gameBoard.board[x][y] = Player.HUMAN;
+        }
+
+        gameBoard.c
+
+
+        System.out.println(gameBoard);
     }
 
 
