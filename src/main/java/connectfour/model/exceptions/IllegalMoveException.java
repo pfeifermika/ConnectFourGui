@@ -1,4 +1,4 @@
-package connectfour.model;
+package connectfour.model.exceptions;
 
 public class IllegalMoveException extends RuntimeException {
 
