@@ -1,5 +1,7 @@
 package connectfour.model;
 
+import connectfour.model.exceptions.IllegalMoveException;
+
 import java.util.Collection;
 
 /**
