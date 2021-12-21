@@ -2,17 +2,25 @@ package connectfour.model;
 
 public enum Player {
 
-    HUMAN(1,"X"),
-    COMPUTER(2,"O"),
-    TIE(0,".");
+    HUMAN("X"),
+    COMPUTER("O"),
+    TIE(".");
 
-    Player(int id,String symbol){
-        this.id = id;
+    Player(String symbol){
         this.symbol = symbol;
     }
 
-    private final int id;
     private final String symbol;
+
+    public static Player getNextPlayer(Player player){
+        if(player == HUMAN){
+            return COMPUTER;
+        }else if(player == COMPUTER){
+            return HUMAN;
+        }else {
+            return TIE;
+        }
+    }
 
     @Override
     public String toString() {
