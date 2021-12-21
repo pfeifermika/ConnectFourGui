@@ -1,8 +1,4 @@
-package connectfour.model.gametree;
-
-import connectfour.model.Board;
-import connectfour.model.GameState;
-import connectfour.model.Player;
+package connectfour.model;
 
 
 /**
@@ -48,7 +44,7 @@ public class Node {
             GameState gameState = (GameState) this.gameState.clone();
 
             if (gameState.insertChip(i, gameState.getFirstPlayer())) {
-                gameState.setFirstPlayer(Player.getNextPlayer(gameState.getFirstPlayer()));
+                gameState.setFirstPlayer(Player.getNextPlayer(gameState.getFirstPlayer()));     //TODO
                 children[i] = new Node(gameState, depth - 1);
             }
         }
