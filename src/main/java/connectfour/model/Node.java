@@ -2,52 +2,56 @@ package connectfour.model;
 
 
 /**
- * Modeling a Node in a 7-ary game tree.
- * Creating a root node automatically creates the full subtree
- * of every possible move, up to a given depth.
- * Implements methods to set the evaluation of every child node
- * and a way to get the column of the best possible move in a subtree
- * using the minmax algorithm.
+ * Models a Node in a 7-ary game tree.
+ * Implements methods to set children of this node and a method to get
+ * the best possible move of the subtree
+ * of this node using the minmax algorithm.
+ *
  */
 public class Node {
 
-
-    private final GameState gameState;
+    /**
+     * Represents the value of this node.
+     */
     private int evaluation;
-    private final int depth;
+
+    /**
+     * The height of the node in the game tree
+     */
+    private final int height;
+
+    /**
+     * Contains all the possible children of this node.
+     */
     private final Node[] children = new Node[Board.COLS];
+
+    int index = -1;
 
 
     /**
-     * Creates a root node and its subtree containing all possible moves, up to
-     * a given depth.
-     *
-     * @param gameState the gameState of the current game
-     * @param depth     the depth of the resulting tree
+     * Creates a new Node with given height and evaluation value.
+     * The evaluation value is initially set to the evaluation value of the
+     * corresponding GameState.
+     * @param height the height of the node inside the game tree.
+     * @param evaluation the evaluation of this node.
      */
-    public Node(GameState gameState, int depth) {
-        this.depth = depth;
-        this.gameState = gameState;
-        createChildren();
+    public Node(int height, int evaluation) {
+        this.height = height;
+        this.evaluation = evaluation;
     }
 
     /**
-     * Recursively creates a complete subtree up to a given depth,
-     * containing all possible moves
+     * Sets a child of this node at a given index.
+     * @param child the child to be set.
+     * @param index the index where the child will be set.
      */
-    private void createChildren() {
-        if (depth == 0) {
-            return;
+    public void setChild(Node child, int index){
+        if(index > children.length){
+            throw new IllegalArgumentException("Index out of bounds");
         }
-
-        for (int i = 0; i < Board.COLS; i++) {
-            GameState gameState = (GameState) this.gameState.clone();
-
-            if (gameState.insertChip(i, gameState.getFirstPlayer())) {
-                gameState.setFirstPlayer(Player.getNextPlayer(gameState.getFirstPlayer()));     //TODO
-                children[i] = new Node(gameState, depth - 1);
-            }
-        }
+        this.children[index] = child;
+        child.index = index;
+        //System.out.println("Node added at height " + height + " at index " + index);
     }
 
     /**
@@ -59,35 +63,45 @@ public class Node {
      * @return the index of the leftmost children with the highest evaluation
      */
     public int getMove() {
-        setEvaluations();
+        setEvaluations(true);
+        //System.out.println("Max Children Value: " + getMaxValueOfChildren() + ", at index: " + getMaxIndex());
         return this.getMaxIndex();
     }
 
     /**
-     * Post order tree traversal starting at the root node.
-     * Sets the evaluation value of all nodes in the tree.
-     * If a node is a leaf its evaluation value is equivalent to
-     * {@code GameState.evaluateBoard}.
-     * For inner nodes, the value is the sum of their own board evaluation and
+     * Post order tree traversal starting at this node.
+     * Updates the evaluation of all inner nodes in the subtree,
+     * including this node.
+     * <p>
+     * If a node is a leaf its evaluation value is not changed.
+     * For inner nodes, the value is set to the sum of their own evaluation and
      * the extremum of the child nodes.
+     * <p>
+     * The extremum is chosen depending on the height of the node and therefore
+     * depends on the player to move. This is an implementation of the
+     * minimax algorithm to maximise the evaluation for the player whose turn it
+     * is in the root node.
      */
-    private void setEvaluations() {
+    private void setEvaluations(boolean max) {
         if (isLeaf()) {
-            evaluation = gameState.evaluateBoard();
+            //System.out.println("Leaf with Evaluation: " + evaluation + " set");
             return;
         }
+
         for (Node n : children) {
             if (n != null) {
-                n.setEvaluations();
+                n.setEvaluations(!max);
             }
         }
-        if (depth % 2 != 0) {
-            evaluation = getMinChildren() + gameState.evaluateBoard();
+        int debug = evaluation;
+        if (max) {
+            evaluation = getMaxValueOfChildren() + evaluation;
         } else {
-            evaluation = getMaxChildren() + gameState.evaluateBoard();
+            evaluation = getMinChildren() + evaluation;
         }
+        //System.out.print("Inner Node at index: " + index + " with evaluation: " + evaluation + " set at depth: " + height);
+        //System.out.println("             this.evaluation = " + debug + ", extremum children = " + (evaluation - debug));
     }
-
 
     /**
      * Returns the index of the maximum value between child nodes.
@@ -106,12 +120,10 @@ public class Node {
     }
 
     /**
-     * Goes through all child nodes and gets maximum value.
-     * If multiple values are equal returns the leftmost.
-     *
-     * @return the largest evaluation value between all children
+     * Iterates over all child nodes and returns the maximum value.
+     * @return the maximum evaluation value between all children.
      */
-    private int getMaxChildren() {
+    private int getMaxValueOfChildren() {
         if (isLeaf()) {
             return 0;
         }
@@ -126,10 +138,8 @@ public class Node {
 
 
     /**
-     * Goes through all child nodes and gets minimum value.
-     * If multiple values are equal returns the leftmost.
-     *
-     * @return the smallest evaluation value between all children
+     * Iterates over all child nodes and returns the minimum value.
+     * @return the minimum evaluation value between all children.
      */
     private int getMinChildren() {
         if (isLeaf()) {
@@ -145,6 +155,6 @@ public class Node {
     }
 
     private boolean isLeaf() {
-        return depth == 0;
+        return height == 0;
     }
 }

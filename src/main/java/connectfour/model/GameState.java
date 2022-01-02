@@ -1,6 +1,5 @@
 package connectfour.model;
 
-import connectfour.model.ai.Minimax;
 import connectfour.model.exceptions.IllegalMoveException;
 import connectfour.model.utility.BoardUtility;
 
@@ -8,7 +7,7 @@ import java.util.*;
 
 /**
  * Models a state of a game of ConnectFour.
- *
+ * <p>
  * For programming ease the top left corner is coordinate (0,0).
  */
 public class GameState implements Board {
@@ -16,13 +15,13 @@ public class GameState implements Board {
     private Player[][] board = new Player[ROWS][COLS];
     private int level = 4;
     private Player firstPlayer;
-    private Set<Coordinates2D> witness;
+    public Collection<Coordinates2D> witness;
+    public int evaluation;
 
+    public final int[] humanGroups;
+    public final int[] computerGroups;
 
-    private final int[] humanGroups = new int[3];
-    private final int[] computerGroups = new int[3];
-
-    private final static Coordinates2D[] START_COORDINATES
+    public static final Coordinates2D[] START_COORDINATES
             = BoardUtility.calculateStartCoordinates();
 
     private static final Coordinates2D[] DIRECTION_VECTORS = {
@@ -34,8 +33,10 @@ public class GameState implements Board {
 
     public GameState() {
         Arrays.stream(board).forEach(row -> Arrays.fill(row, Player.TIE));
+        humanGroups = new int[CONNECT - 1];
+        computerGroups = new int[CONNECT - 1];
+        witness = new TreeSet<>();
     }
-
 
 
     /**
@@ -69,10 +70,9 @@ public class GameState implements Board {
             throw new IllegalMoveException();
         }
 
-        Minimax minimax = new Minimax();
+        Node root = buildGameTree();
 
-        int col = minimax.calculateMove(this,this.level);
-        System.out.println(col);
+        int col = root.getMove();
         GameState newBoard = (GameState) clone();
         newBoard.firstPlayer = Player.HUMAN;
         if (!newBoard.insertChip(col, Player.COMPUTER)) {
@@ -124,10 +124,11 @@ public class GameState implements Board {
      * @throws IllegalStateException There is no winner available.
      */
     public Collection<Coordinates2D> getWitness() {
-       // Player player = getWinner();
-       // if(player == null){
-       //     throw new IllegalStateException("There is no winner available");
-       // }k
+        Player player = getWinner();
+        if (player == null) {
+            throw new IllegalStateException("There is no winner available");
+        }
+
         return witness;
     }
 
@@ -166,8 +167,6 @@ public class GameState implements Board {
      * not finished yet.
      */
     public Player getWinner() {
-        countGroups();
-
         if (humanGroups[2] != 0) {
             return Player.HUMAN;
         } else if (computerGroups[2] != 0) {
@@ -175,8 +174,6 @@ public class GameState implements Board {
         } else {
             return null;
         }
-
-
     }
 
 
@@ -200,6 +197,7 @@ public class GameState implements Board {
 
         if (board[i][col] == Player.TIE) {
             board[i][col] = player;
+            evaluation = evaluateBoard();
             return true;
         } else {
             return false;
@@ -219,11 +217,12 @@ public class GameState implements Board {
     /**
      * {@inheritDoc}
      *
-     * @param row The row of the slot in the game grid, starting from 0.
-     * @param col The column of the slot in the game grid starting from 0.
+     * @param row The row of the slot in the game grid, starting from 1.
+     * @param col The column of the slot in the game grid starting from 1.
      * @return The slot's content.
      */
     public Player getSlot(int row, int col) {
+        //TODO umrechnen und so
         return board[row][col];
     }
 
@@ -238,10 +237,14 @@ public class GameState implements Board {
         for (int i = 0; i < board.length; i++)
             clonedArray[i] = board[i].clone();
 
+
+        Collection<Coordinates2D> clonedWitness = new TreeSet<>(witness);
+
         GameState clonedBoard = new GameState();
         clonedBoard.board = clonedArray;
         clonedBoard.firstPlayer = this.getFirstPlayer();
         clonedBoard.level = this.level;
+        clonedBoard.witness = clonedWitness;
 
         return clonedBoard;
     }
@@ -263,7 +266,10 @@ public class GameState implements Board {
         return strBuilder.toString();
     }
 
-    protected int evaluateBoard() {
+    public int evaluateBoard() {
+        Arrays.fill(humanGroups,0);
+        Arrays.fill(computerGroups,0);
+
         countGroups();
 
         int p = 50 + computerGroups[0] + 4 * computerGroups[1]
@@ -282,28 +288,18 @@ public class GameState implements Board {
                 - getTokensInCol(5, Player.HUMAN);
 
         int r = 0;
-        if (getWinner() == Player.COMPUTER) {
+        if (getWinner() == Player.COMPUTER && firstPlayer == Player.COMPUTER) {
             r = 5000000;
         }
 
         return p + q + r;
     }
 
-    private int getTokensInCol(int col, Player player) {
-        int count = 0;
-        for (Player[] players : board) {
-            if (players[col] == player) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     /**
      * Loops over every entry in {@code START_COORDINATES} and calculates the
      * groups for every direction for that coordinate.
      */
-    private void countGroups() {
+    public void countGroups() {
         int diagCount = ROWS + COLS - 1;
         for (int i = 0; i < START_COORDINATES.length; i++) {
             if (i <= diagCount) {
@@ -325,38 +321,58 @@ public class GameState implements Board {
         }
     }
 
+    private int getTokensInCol(int col, Player player) {
+        int count = 0;
+        for (Player[] players : board) {
+            if (players[col] == player) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     private void calcGroupsInRow(Coordinates2D start, Coordinates2D incr) {
         int count = 0;
         int row = start.row();
         int col = start.col();
         Player player = board[row][col];
+        Set<Coordinates2D> tempWitness = new TreeSet<>();
 
         //loop over every coordinate in one line/diag
         while (isInBounds(row, col)) {
+
             if (player == Player.TIE) {
                 count = 1;
             } else if (board[row][col] == player) {
                 count++;
+                tempWitness.add(new Coordinates2D(row, col));
             } else {
-                increaseGroupCount(count, player,row,col);
+                increaseGroupCount(count, player);
+                //System.out.println("increased group count: " + row + "," + col + " by: " + count);
                 count = 1;
+                tempWitness.clear();
             }
+
+            if (count >= CONNECT) {
+                increaseGroupCount(count, player);
+                witness.clear();
+                witness.addAll(tempWitness);
+                tempWitness.clear();
+                count = 0;
+            }
+
             player = board[row][col];
             row += incr.row();
             col += incr.col();
         }
-        increaseGroupCount(count, player,row,col);
+        increaseGroupCount(count, player);
     }
 
-    private void increaseGroupCount(int count, Player player,int row, int col) {
+    private void increaseGroupCount(int count, Player player) {
         if (count == 0 || count == 1) {
             return;
         }
-        if(count > 3){
-            this.witness = floodFill(row,col,player);
-        }
         int index = Math.min(CONNECT - 2, count - 2);
-
         if (player == Player.HUMAN) {
             humanGroups[index]++;
         } else if (player == Player.COMPUTER) {
@@ -364,26 +380,41 @@ public class GameState implements Board {
         }
     }
 
+    /**
+     * Builds a game Tree from the current board to a height of level
+     *
+     * @return the root of the created game tree.
+     */
+    private Node buildGameTree() {
 
+        Node root = new Node(level, evaluation);
+        buildSubtree(this, root, level - 1);
+        return root;
+    }
 
-    //TODO
-    private Set<Coordinates2D> floodFill(int row, int col, Player player){
-        if(!isInBounds(row,col) || board[row][col] != player){
-            return Collections.emptySet();
-        } else {
+    private void buildSubtree(GameState gameState, Node parent, int height) {
+        if (height < 0) {
+            return;
+        }
+        if (gameState == null) {
+            return;
+        }
 
-            Set<Coordinates2D> cordSet = new LinkedHashSet<>();
-            cordSet.addAll(floodFill(row + 1, col, player));
-            cordSet.addAll(floodFill(row - 1, col, player));
-            cordSet.addAll(floodFill(row, col + 1, player));
-            cordSet.addAll(floodFill(row, col - 1, player));
+        for (int i = 0; i < COLS; i++) {
+            GameState newGameState = (GameState) gameState.clone();
 
-           return cordSet;
+            if (newGameState.insertChip(i, newGameState.firstPlayer)) {
+                Node child = new Node(height, newGameState.evaluation);
+                newGameState.firstPlayer = Player.getNextPlayer(newGameState.getFirstPlayer());
+                parent.setChild(child, i);
+
+                //System.out.println("New node created at height: "+ height +", at index: "+ i + ", with evaluation: " + newGameState.evaluation);
+                //System.out.println(newGameState);
+
+                buildSubtree(newGameState, child, height - 1);
+            }
         }
 
     }
 
-    protected void setFirstPlayer(Player player){
-        this.firstPlayer = player;
-    }
 }

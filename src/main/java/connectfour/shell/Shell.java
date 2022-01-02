@@ -9,9 +9,7 @@ import connectfour.model.exceptions.IllegalMoveException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 
 /**
@@ -20,7 +18,6 @@ import java.util.Collections;
 public class Shell {
 
     private static Board game;
-    private static final Board DEFAULT_GAMESTATE = new GameState();
     private static Player startPlayer = Player.HUMAN;
     private static int level = 4;
 
@@ -32,13 +29,20 @@ public class Shell {
         BufferedReader stdin =
                 new BufferedReader(new InputStreamReader(System.in));
         execute(stdin);
+      //TreeSet<Coordinates2D> list = new TreeSet<>();
+      //list.add(new Coordinates2D(2,2));
+      //list.add(new Coordinates2D(4,2));
+      //list.add(new Coordinates2D(5,5));
+      //list.add(new Coordinates2D(4,5));
+      //list.add(new Coordinates2D(5,5));
+      //list.add(new Coordinates2D(1,2));
+
+      //System.out.println(list);
     }
 
 
-
-
     private static void execute(BufferedReader stdin) throws IOException {
-        game = DEFAULT_GAMESTATE;
+        game = new GameState();
 
         boolean run = true;
 
@@ -66,10 +70,10 @@ public class Shell {
 
     }
 
-    private static void newGame(){
-        game = DEFAULT_GAMESTATE;
+    private static void newGame() {
+        game = new GameState();
         game.setLevel(level);
-        if(startPlayer == Player.COMPUTER){
+        if (startPlayer == Player.COMPUTER) {
             machineMove();
         }
     }
@@ -84,13 +88,13 @@ public class Shell {
         }
     }
 
-    private static void switchSides(){
+    private static void switchSides() {
         game = new GameState();
         game.setLevel(level);
-        if(startPlayer == Player.HUMAN){
+        if (startPlayer == Player.HUMAN) {
             startPlayer = Player.COMPUTER;
             machineMove();
-        } else if(startPlayer == Player.COMPUTER){
+        } else if (startPlayer == Player.COMPUTER) {
             startPlayer = Player.HUMAN;
         }
     }
@@ -106,7 +110,7 @@ public class Shell {
         try {
             int column = Integer.parseInt(tokens[1]);
             newGamestate = game.move(column - 1);
-        } catch (NumberFormatException | NullPointerException e) {
+        } catch (NumberFormatException | NullPointerException | ArrayIndexOutOfBoundsException e) {
             System.out.println("Error! Invalid Arguments!");
             return;
         } catch (IllegalArgumentException e) {
@@ -117,21 +121,20 @@ public class Shell {
             return;
         }
 
-
         if (newGamestate == null) {
             System.out.println("Error! While making your move an error has occurred please try again!");
         } else if (newGamestate.isGameOver()) {
             game = newGamestate;
             printWinnerMessage();
         } else {
-            //means game is not finished.
+            // game is not finished.
             game = newGamestate;
             machineMove();
         }
 
     }
 
-    private static void machineMove(){
+    private static void machineMove() {
         if (game.isGameOver()) {
             System.out.println("Error! The game is over! Please start a new one");
             return;
@@ -141,17 +144,17 @@ public class Shell {
 
         try {
             newGamestate = game.machineMove();
-        } catch (IllegalMoveException e){
+        } catch (IllegalMoveException e) {
             System.out.println("Something went wrong when calculating the computer move");
             return;
         }
 
-        if(newGamestate == null){
+        if (newGamestate == null) {
             System.out.println("Something went wrong when calculating the computer move 2.0");
-        }else if(newGamestate.isGameOver()){
+        } else if (newGamestate.isGameOver()) {
             game = newGamestate;
             printWinnerMessage();
-        }else {
+        } else {
             game = newGamestate;
         }
     }
@@ -163,18 +166,11 @@ public class Shell {
             System.out.println("Congratulations! You won.");
         } else if (player == Player.COMPUTER) {
             System.out.println("Sorry! Machine wins");
-        }else {
+        } else {
             System.out.println("Nobody wins. Tie.");
         }
     }
 
-    private static void printWitness(){
-        if(game.getWinner() != null){
-            System.out.println(game.getWitness());
-        } else {
-            System.out.println("Error! The game is not won by any player!");
-        }
-    }
 
     private static void print() {
         System.out.println(game.toString());
@@ -201,6 +197,46 @@ public class Shell {
                 """); //TODO
     }
 
+    private static void printWitness() {
+        if (game.getWinner() != null) {
+            StringJoiner joiner = new StringJoiner(", ");
+            Set<Coordinates2D> set = new TreeSet<>();
+            game.getWitness().forEach(c -> set.add(convertCord(c)));
+
+            set.forEach(c ->
+                    joiner.add(c.toString()));
+
+            System.out.println(joiner);
+        } else {
+            System.out.println("Error! The game is not won by any player!");
+        }
+    }
+
+    private static Coordinates2D convertCord(Coordinates2D cord){
+        /*
+        int ROWS = 6;
+        int COLS = 7;
+        1 -> 6
+        2 -> 5
+        3 -> 4
+        4 -> 3
+        5 -> 2
+        6 -> 1
+
+        row++;
+        row = -row
+        row = ROWS + 1 + row;
+
+        row = ROWS + 2 - row;
+
+        col = col + 1
+
+         */
+
+        int newRow = Board.ROWS + 1 - (cord.row() + 1);
+        int newCol = cord.col() + 1;
+        return new Coordinates2D(newRow,newCol);
+    }
 
 
 }

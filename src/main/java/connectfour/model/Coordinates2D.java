@@ -25,3 +25,15 @@ public record Coordinates2D(int row, int col) implements Comparable<Coordinates2
         return 0;
     }
 }
+
+/*
+
+    if this < o -> return -1
+
+    if this == o -> return 0
+
+    if this > o -> return 1
+
+
+
+ */
