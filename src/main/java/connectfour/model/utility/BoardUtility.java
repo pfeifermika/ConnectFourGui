@@ -3,26 +3,35 @@ package connectfour.model.utility;
 import connectfour.model.Coordinates2D;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static connectfour.model.Board.ROWS;
 import static connectfour.model.Board.COLS;
 
 public class BoardUtility {
 
+    /**
+     * Private constructor to indicate utility class
+     */
     private BoardUtility(){
-
     }
 
-    //TODO CLEANUP types
-    //diagCount = ROWS + COLS - 1
-    //index 0...diagCount für diag up
-    //index COLS - 1 ... diagCount für horizontal rechts
-    //index COLS - 1 ... array.length für diag runter
-    //index diagCount ... array.length für runter
+    /**
+     * Calculates the starting coordinates needed to count the groups,
+     * based on the layout of the board and stores them in an array.
+     *
+     * The coordinates are ordered as follows:
+     * index 0...ROWS + COLS - 1 contains start coordinates for diagonal up
+     * index COLS - 1...ROWS + COLS - 1 contains start coordinates for horizontal
+     * index COLS - 1...array.length - 1 contains start coordinates for diag down
+     * index ROWS + COLS - 1...array.length - 1 contains start coordinates for vertical
+     *
+     * @return array containing start coordinates to calculate groups
+     */
     public static Coordinates2D[] calculateStartCoordinates() {
         int diagCount = ROWS + COLS - 1;
 
-        ArrayList<Coordinates2D> startCoordinates = new ArrayList<>();
+        List<Coordinates2D> startCoordinates = new ArrayList<>();
 
         for (int diag = 0; diag < diagCount; diag++) {
             int row = Math.max(ROWS - 1 - diag, 0);

@@ -6,7 +6,6 @@ package connectfour.model;
  * Implements methods to set children of this node and a method to get
  * the best possible move of the subtree
  * of this node using the minmax algorithm.
- *
  */
 public class Node {
 
@@ -25,14 +24,13 @@ public class Node {
      */
     private final Node[] children = new Node[Board.COLS];
 
-    int index = -1;
-
 
     /**
      * Creates a new Node with given height and evaluation value.
      * The evaluation value is initially set to the evaluation value of the
      * corresponding GameState.
-     * @param height the height of the node inside the game tree.
+     *
+     * @param height     the height of the node inside the game tree.
      * @param evaluation the evaluation of this node.
      */
     public Node(int height, int evaluation) {
@@ -42,16 +40,15 @@ public class Node {
 
     /**
      * Sets a child of this node at a given index.
+     *
      * @param child the child to be set.
      * @param index the index where the child will be set.
      */
-    public void setChild(Node child, int index){
-        if(index > children.length){
+    public void setChild(Node child, int index) {
+        if (index > children.length) {
             throw new IllegalArgumentException("Index out of bounds");
         }
         this.children[index] = child;
-        child.index = index;
-        //System.out.println("Node added at height " + height + " at index " + index);
     }
 
     /**
@@ -64,7 +61,6 @@ public class Node {
      */
     public int getMove() {
         setEvaluations(true);
-        //System.out.println("Max Children Value: " + getMaxValueOfChildren() + ", at index: " + getMaxIndex());
         return this.getMaxIndex();
     }
 
@@ -84,7 +80,6 @@ public class Node {
      */
     private void setEvaluations(boolean max) {
         if (isLeaf()) {
-            //System.out.println("Leaf with Evaluation: " + evaluation + " set");
             return;
         }
 
@@ -93,14 +88,11 @@ public class Node {
                 n.setEvaluations(!max);
             }
         }
-        int debug = evaluation;
         if (max) {
             evaluation = getMaxValueOfChildren() + evaluation;
         } else {
             evaluation = getMinChildren() + evaluation;
         }
-        //System.out.print("Inner Node at index: " + index + " with evaluation: " + evaluation + " set at depth: " + height);
-        //System.out.println("             this.evaluation = " + debug + ", extremum children = " + (evaluation - debug));
     }
 
     /**
@@ -121,6 +113,7 @@ public class Node {
 
     /**
      * Iterates over all child nodes and returns the maximum value.
+     *
      * @return the maximum evaluation value between all children.
      */
     private int getMaxValueOfChildren() {
@@ -136,9 +129,9 @@ public class Node {
         return maxValue;
     }
 
-
     /**
      * Iterates over all child nodes and returns the minimum value.
+     *
      * @return the minimum evaluation value between all children.
      */
     private int getMinChildren() {
