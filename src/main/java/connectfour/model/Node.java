@@ -15,7 +15,7 @@ public class Node {
     private int evaluation;
 
     /**
-     * The height of the node in the game tree
+     * The height of the node in the game tree.
      */
     private final int height;
 
@@ -23,7 +23,6 @@ public class Node {
      * Contains all the possible children of this node.
      */
     private final Node[] children = new Node[Board.COLS];
-
 
     /**
      * Creates a new Node with given height and evaluation value.
@@ -59,9 +58,9 @@ public class Node {
      *
      * @return the index of the leftmost children with the highest evaluation
      */
-    public int getMove() {
+    public int getBestMove() {
         setEvaluations(true);
-        return this.getMaxIndex();
+        return this.getIndexOfMaxValue();
     }
 
     /**
@@ -77,6 +76,9 @@ public class Node {
      * depends on the player to move. This is an implementation of the
      * minimax algorithm to maximise the evaluation for the player whose turn it
      * is in the root node.
+     *
+     * @param max when true the max child value is used,
+     *            when false the min child value.
      */
     private void setEvaluations(boolean max) {
         if (isLeaf()) {
@@ -91,7 +93,7 @@ public class Node {
         if (max) {
             evaluation = getMaxValueOfChildren() + evaluation;
         } else {
-            evaluation = getMinChildren() + evaluation;
+            evaluation = getMinValueOfChildren() + evaluation;
         }
     }
 
@@ -101,10 +103,11 @@ public class Node {
      *
      * @return the index of the maximum value between all child nodes.
      */
-    private int getMaxIndex() {
+    private int getIndexOfMaxValue() {
         int maxIndex = 0;
         for (int i = 1; i < children.length; i++) {
-            if (children[i] != null && children[i].evaluation > children[maxIndex].evaluation) {
+            if (children[i] != null
+                    && children[i].evaluation > children[maxIndex].evaluation) {
                 maxIndex = i;
             }
         }
@@ -134,7 +137,7 @@ public class Node {
      *
      * @return the minimum evaluation value between all children.
      */
-    private int getMinChildren() {
+    private int getMinValueOfChildren() {
         if (isLeaf()) {
             return 0;
         }
@@ -147,6 +150,11 @@ public class Node {
         return minValue;
     }
 
+    /**
+     * Checks if a node is a leaf.
+     *
+     * @return true if the node is a leaf, false otherwise.
+     */
     private boolean isLeaf() {
         return height == 0;
     }

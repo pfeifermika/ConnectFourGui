@@ -6,11 +6,13 @@ package connectfour.model;
  * @param row the row
  * @param col the col
  */
-public record Coordinates2D(int row, int col) implements Comparable<Coordinates2D> {
+public record Coordinates2D(int row, int col)
+        implements Comparable<Coordinates2D> {
 
     /**
-     * Returns a string representation of this coordinate in the following format:
-     * (row,col)
+     * Returns a string representation of this coordinate in the
+     * following format:
+     * <p>(row,col)</p>
      *
      * @return the string representation of this coordinate.
      */
@@ -34,6 +36,7 @@ public record Coordinates2D(int row, int col) implements Comparable<Coordinates2
         } else if (this.row > o.row) {
             return 1;
         }
+
         if (this.col < o.col) {
             return -1;
         } else if (this.col > o.col) {

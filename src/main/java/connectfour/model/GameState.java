@@ -3,12 +3,26 @@ package connectfour.model;
 import connectfour.model.exceptions.IllegalMoveException;
 import connectfour.model.utility.BoardUtility;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
- * Models a state of a game of ConnectFour.
+ * Represents a state of a game of ConnectFour.
  * <p>
- * For programming ease the top left corner is coordinate (0,0).
+ * An instance of this Class is treated as immutable, therefore a new instance
+ * with the move executed is returned, when calling {@link GameState#move(int)}
+ * or {@link GameState#machineMove()}.
+ * <p>
+ * This class implements methods to execute a human or computer move,
+ * to change the difficulty level, to get the player to move, to check if the
+ * game is over, to check if there is a winner, to get the witnesses of a win
+ * and the player token of a specific slot.
+ * <p>
+ * The top left corner of {@code board} is the coordinate (0,0)
+ * <p>
+ * Implements public methods to play a game of ConnectFour against a computer.
  */
 public class GameState implements Board {
 
@@ -54,10 +68,10 @@ public class GameState implements Board {
      * directions to traverse the board when calculating groups.
      */
     private static final Coordinates2D[] DIRECTION_VECTORS = {
-            new Coordinates2D(1, 0),  //vertical
-            new Coordinates2D(0, 1),  //horizontal
-            new Coordinates2D(-1, 1), //diag up
-            new Coordinates2D(1, 1)   //diag down
+            new Coordinates2D(1, 0), // vertical
+            new Coordinates2D(0, 1), // horizontal
+            new Coordinates2D(-1, 1), // diag up
+            new Coordinates2D(1, 1) // diag down
     };
 
     /**
@@ -117,7 +131,8 @@ public class GameState implements Board {
      * instance, which is treated here as immutable. Instead, a new board/game
      * is returned, which is a copy of {@code this} with the move executed.
      *
-     * @return A new board with the move executed.
+     * @return A new board with the move executed or {@code null},
+     * when there was an error inserting the chip
      * @throws IllegalMoveException The game is already over, or it is not
      *                              the machine's turn.
      */
@@ -129,11 +144,11 @@ public class GameState implements Board {
             throw new IllegalMoveException();
         }
 
-        //creating the game tree
+        // creating the game tree
         Node root = new Node(level, evaluation);
         buildSubtree(this, root, level - 1);
 
-        int col = root.getMove();
+        int col = root.getBestMove();
 
         GameState newBoard = (GameState) clone();
         newBoard.firstPlayer = Player.HUMAN;
@@ -149,6 +164,9 @@ public class GameState implements Board {
     public void setLevel(int level) {
         if (level > 0) {
             this.level = level;
+        } else {
+            throw new IllegalArgumentException(
+                    "The level must not be lower than 1");
         }
     }
 
@@ -197,6 +215,7 @@ public class GameState implements Board {
      * @param row The row of the slot in the game grid.
      * @param col The column of the slot in the game grid.
      * @return The slot's content.
+     * @throws IllegalArgumentException The coordinates are out of bounds.
      */
     public Player getSlot(int row, int col) {
         if (!isInBounds(row, col)) {
@@ -211,26 +230,27 @@ public class GameState implements Board {
      * @return A clone.
      */
     public Board clone() {
-
+        GameState copy = null;
         try {
-            super.clone();
+            copy = (GameState) super.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
-        Player[][] clonedArray = new Player[board.length][];
-        for (int i = 0; i < board.length; i++)
-            clonedArray[i] = board[i].clone();
-
-
         Collection<Coordinates2D> clonedWitness = new TreeSet<>(witness);
 
-        GameState clonedBoard = new GameState();
-        clonedBoard.board = clonedArray;
-        clonedBoard.firstPlayer = this.getFirstPlayer();
-        clonedBoard.level = this.level;
-        clonedBoard.witness = clonedWitness;
+        Player[][] clonedArray = new Player[board.length][];
+        for (int i = 0; i < board.length; i++) {
+            clonedArray[i] = board[i].clone();
+        }
 
-        return clonedBoard;
+        assert copy != null;
+        copy.board = clonedArray;
+        copy.firstPlayer = this.getFirstPlayer();
+        copy.level = this.level;
+        copy.witness = clonedWitness;
+        copy.evaluation = evaluation;
+
+        return copy;
     }
 
     /**
@@ -261,7 +281,7 @@ public class GameState implements Board {
      * @param player the player whose chip gets inserted.
      * @return true if the operation was successful, false otherwise.
      */
-    public boolean insertChip(int col, Player player) {
+    private boolean insertChip(int col, Player player) {
         if (col < 0 || col > COLS) {
             return false;
         }
@@ -300,7 +320,8 @@ public class GameState implements Board {
 
             if (newGameState.insertChip(i, newGameState.firstPlayer)) {
                 Node child = new Node(depth, newGameState.evaluation);
-                newGameState.firstPlayer = Player.getOppositePlayer(newGameState.getFirstPlayer());
+                newGameState.firstPlayer
+                        = Player.getOtherPlayer(newGameState.getFirstPlayer());
                 parent.setChild(child, i);
 
                 buildSubtree(newGameState, child, depth - 1);
@@ -317,7 +338,7 @@ public class GameState implements Board {
      * @return evaluation of this instance.
      */
     private int evaluateBoard() {
-        //reset groups
+        // reset groups
         Arrays.fill(humanGroups, 0);
         Arrays.fill(computerGroups, 0);
 
@@ -373,19 +394,19 @@ public class GameState implements Board {
         int diagCount = ROWS + COLS - 1;
         for (int i = 0; i < START_COORDINATES.length; i++) {
             if (i <= diagCount) {
-                //from left down corner to right up corner
+                // from left down corner to right up corner
                 calcGroupsInLine(START_COORDINATES[i], DIRECTION_VECTORS[2]);
             }
             if (i >= COLS - 1 && i <= diagCount) {
-                //horizontal
+                // horizontal
                 calcGroupsInLine(START_COORDINATES[i], DIRECTION_VECTORS[1]);
             }
             if (i >= COLS - 1) {
-                //from left upper corner to right down corner
+                // from left upper corner to right down corner
                 calcGroupsInLine(START_COORDINATES[i], DIRECTION_VECTORS[3]);
             }
             if (i >= diagCount - 1) {
-                //vertical
+                // vertical
                 calcGroupsInLine(START_COORDINATES[i], DIRECTION_VECTORS[0]);
             }
         }
@@ -414,7 +435,7 @@ public class GameState implements Board {
         Player player = board[row][col];
         Set<Coordinates2D> tempWitness = new TreeSet<>();
 
-        //loop over every coordinate in one line/diag
+        // loop over every coordinate in one line/diag
         while (isInBounds(row, col)) {
 
             if (player == Player.TIE) {
@@ -470,8 +491,8 @@ public class GameState implements Board {
      * @return true when the coordinates are in bounds, false otherwise.
      */
     private boolean isInBounds(int row, int col) {
-        return row <= ROWS - 1 && row >= 0 &&
-                col <= COLS - 1 && col >= 0;
+        return row <= ROWS - 1 && row >= 0
+                && col <= COLS - 1 && col >= 0;
     }
 
     /**

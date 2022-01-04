@@ -42,12 +42,12 @@ public interface Board extends Cloneable {
      *
      * @param col The column where to put the tile of the human.
      * @return A new board with the move executed. If the move is not valid,
-     *         i.e. {@code col} was full before, then {@code null} will be
+     *         i.e., {@code col} was full before, then {@code null} will be
      *         returned.
      * @throws IllegalMoveException The game is already over, or it is not the
      *         the human's turn.
      * @throws IllegalArgumentException The provided column {@code col} is
-     *         invalid, i.e. not found on the grid.
+     *         invalid, i.e., not found on the grid.
      */
     Board move(int col);
 
@@ -59,8 +59,10 @@ public interface Board extends Cloneable {
      * @return A new board with the move executed.
      * @throws IllegalMoveException The game is already over, or it is not the
      *         the machine's turn.
+     * @throws InterruptedException {@link Thread#interrupt()} was called on the
+     *         executing thread. Thus, the execution stops prematurely.
      */
-    Board machineMove();
+    Board machineMove() throws InterruptedException;
 
     /**
      * Sets the skill level of the machine.
@@ -89,7 +91,7 @@ public interface Board extends Cloneable {
      * Gets the coordinates of the {@code CONNECT} tiles which are in a line,
      * i.e., a witness of victory. The left lower corner has the smallest
      * coordinates. Should only be called if {@link #getWinner()} returns a
-     * value unequal {@code null}. Coordinates are 2-tuples of rows row columns.
+     * value unequal {@code null}. Coordinates are 2-tuples of rows x columns.
      *
      * The result may not be unique!
      *
@@ -116,7 +118,7 @@ public interface Board extends Cloneable {
     Board clone();
 
     /**
-     * Gets the string representation of this board as row row column matrix. Each
+     * Gets the string representation of this board as row x column matrix. Each
      * slot is represented by one the three chars '.', 'X', or 'O'. '.' means
      * that the slot currently contains no tile. 'X' means that it contains a
      * tile of the human player. 'O' means that it contains a machine tile. In
@@ -126,5 +128,6 @@ public interface Board extends Cloneable {
      */
     @Override
     String toString();
+
 
 }

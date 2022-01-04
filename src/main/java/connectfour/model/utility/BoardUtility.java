@@ -8,23 +8,30 @@ import java.util.List;
 import static connectfour.model.Board.ROWS;
 import static connectfour.model.Board.COLS;
 
-public class BoardUtility {
+public final class BoardUtility {
 
     /**
-     * Private constructor to indicate utility class
+     * Private constructor to indicate utility class.
      */
-    private BoardUtility(){
+    private BoardUtility() {
+        throw new AssertionError("Utility Class!");
     }
 
     /**
      * Calculates the starting coordinates needed to count the groups,
      * based on the layout of the board and stores them in an array.
-     *
+     *<p>
      * The coordinates are ordered as follows:
-     * index 0...ROWS + COLS - 1 contains start coordinates for diagonal up
-     * index COLS - 1...ROWS + COLS - 1 contains start coordinates for horizontal
-     * index COLS - 1...array.length - 1 contains start coordinates for diag down
-     * index ROWS + COLS - 1...array.length - 1 contains start coordinates for vertical
+     *<ul>
+     *     <li>index 0...ROWS + COLS - 1:
+     *          contains start coordinates for diagonal up</li>
+     *     <li>index COLS - 1...ROWS + COLS - 1:
+     *          contains start coordinates for horizontal.</li>
+     *     <li>index COLS - 1...array.length - 1:
+     *          contains start coordinates for diag down.</li>
+     *     <li>index ROWS + COLS - 1...array.length - 1:
+     *          contains start coordinates for vertical.</li>
+     *</ul>
      *
      * @return array containing start coordinates to calculate groups
      */

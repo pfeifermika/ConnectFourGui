@@ -5,16 +5,25 @@ package connectfour.model;
  */
 public enum Player {
 
-    /** Human player */
+    /**
+     * Human player.
+     */
     HUMAN("X"),
-    /** Computer player */
+    /**
+     * Computer player.
+     */
     COMPUTER("O"),
-    /** Neither human nor computer */
+    /**
+     * Neither human nor computer.
+     */
     TIE(".");
 
+    /**
+     * The respective char representation.
+     */
     private final String symbol;
 
-    Player(String symbol){
+    Player(String symbol) {
         this.symbol = symbol;
     }
 
@@ -24,12 +33,12 @@ public enum Player {
      * @param player the player.
      * @return the opposite to the given player.
      */
-    public static Player getOppositePlayer(Player player){
-        if(player == HUMAN){
+    public static Player getOtherPlayer(Player player) {
+        if (player == HUMAN) {
             return COMPUTER;
-        }else if(player == COMPUTER){
+        } else if (player == COMPUTER) {
             return HUMAN;
-        }else {
+        } else {
             return TIE;
         }
     }
