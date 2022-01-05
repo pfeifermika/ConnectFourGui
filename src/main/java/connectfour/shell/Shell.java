@@ -222,7 +222,7 @@ public final class Shell {
             if (player == Player.HUMAN) {
                 System.out.println("Congratulations! You won.");
             } else if (player == Player.COMPUTER) {
-                System.out.println("Sorry! Machine wins");
+                System.out.println("Sorry! Machine wins.");
             } else {
                 System.out.println("Nobody wins. Tie.");
             }

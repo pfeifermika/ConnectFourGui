@@ -44,7 +44,7 @@ public class GameState implements Board {
      * If there are {@code CONNECT} amount of chips connected contains
      * the winning group otherwise it is empty
      */
-    private Collection<Coordinates2D> witness;
+    private Collection<Coordinates2D> witness = new TreeSet<>();
     /**
      * The computer evaluation of the current state.
      */
@@ -54,8 +54,8 @@ public class GameState implements Board {
      * Arrays containing the count of connected groups either player has
      * respectively, where the count of n-groups is saved at index n - 2.
      */
-    private final int[] humanGroups;
-    private final int[] computerGroups;
+    private final int[] humanGroups = new int[CONNECT - 1];
+    private final int[] computerGroups = new int[CONNECT - 1];
 
     /**
      * Contains the starting coordinates used to calculate the groups.
@@ -79,9 +79,6 @@ public class GameState implements Board {
      */
     public GameState() {
         Arrays.stream(board).forEach(row -> Arrays.fill(row, Player.TIE));
-        humanGroups = new int[CONNECT - 1];
-        computerGroups = new int[CONNECT - 1];
-        witness = new TreeSet<>();
     }
 
 
@@ -262,9 +259,11 @@ public class GameState implements Board {
     public String toString() {
         StringBuilder strBuilder = new StringBuilder();
         for (Player[] players : board) {
-            for (int k = 0; k < board[0].length; k++) {
-                strBuilder.append(players[k].toString()).append(" ");
+            for (int i = 0; i < board[0].length; i++) {
+                strBuilder.append(players[i].toString()).append(" ");
             }
+            // delete trailing whitespace
+            strBuilder.setLength(strBuilder.length() - 1);
             strBuilder.append("\n");
         }
         return strBuilder.toString();
@@ -282,7 +281,7 @@ public class GameState implements Board {
      * @return true if the operation was successful, false otherwise.
      */
     private boolean insertChip(int col, Player player) {
-        if (col < 0 || col > COLS) {
+        if (col < 0 || col > COLS - 1) {
             return false;
         }
 
@@ -293,7 +292,7 @@ public class GameState implements Board {
 
         if (board[i][col] == Player.TIE) {
             board[i][col] = player;
-            evaluation = evaluateBoard();
+            countGroups();
             return true;
         } else {
             return false;
@@ -319,7 +318,7 @@ public class GameState implements Board {
             GameState newGameState = (GameState) gameState.clone();
 
             if (newGameState.insertChip(i, newGameState.firstPlayer)) {
-                Node child = new Node(depth, newGameState.evaluation);
+                Node child = new Node(depth, newGameState.evaluateBoard(depth));
                 newGameState.firstPlayer
                         = Player.getOtherPlayer(newGameState.getFirstPlayer());
                 parent.setChild(child, i);
@@ -335,14 +334,10 @@ public class GameState implements Board {
      * then calculates the number of tokens in each column.
      * Finally, checks if the computer can win with its next move.
      *
+     * @param depth the current depth in the game tree
      * @return evaluation of this instance.
      */
-    private int evaluateBoard() {
-        // reset groups
-        Arrays.fill(humanGroups, 0);
-        Arrays.fill(computerGroups, 0);
-
-        countGroups();
+    private int evaluateBoard(int depth) {
 
         int p = 50 + computerGroups[0] + 4 * computerGroups[1]
                 + 5000 * computerGroups[2] - humanGroups[0]
@@ -360,7 +355,9 @@ public class GameState implements Board {
                 - getTokensInCol(5, Player.HUMAN);
 
         int r = 0;
-        if (getWinner() == Player.COMPUTER && firstPlayer == Player.COMPUTER) {
+        if (getWinner() == Player.COMPUTER
+                && firstPlayer == Player.COMPUTER
+                && depth == level - 1) {
             r = 5000000;
         }
 
@@ -391,6 +388,10 @@ public class GameState implements Board {
      * from {@link GameState#DIRECTION_VECTORS}.
      */
     private void countGroups() {
+        // reset groups
+        Arrays.fill(humanGroups, 0);
+        Arrays.fill(computerGroups, 0);
+
         int diagCount = ROWS + COLS - 1;
         for (int i = 0; i < START_COORDINATES.length; i++) {
             if (i <= diagCount) {

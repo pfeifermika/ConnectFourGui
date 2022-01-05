@@ -44,7 +44,10 @@ public enum Player {
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the string representation of a player as defined in the symbol
+     * field.
+     *
+     * @return the string representation of a player.
      */
     @Override
     public String toString() {

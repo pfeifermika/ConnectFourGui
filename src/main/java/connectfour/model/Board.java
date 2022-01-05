@@ -8,7 +8,7 @@ import java.util.Collection;
  * The Connect Four game originally published by Milton Bradley (MB) in 1974.
  * The game is also known as Four in a Row, Four in a Line, Lineup Four, Four
  * Wins, or Captain's Mistress.
- *
+ * <p>
  * A human plays against the machine.
  */
 public interface Board extends Cloneable {
@@ -42,12 +42,12 @@ public interface Board extends Cloneable {
      *
      * @param col The column where to put the tile of the human.
      * @return A new board with the move executed. If the move is not valid,
-     *         i.e., {@code col} was full before, then {@code null} will be
-     *         returned.
-     * @throws IllegalMoveException The game is already over, or it is not the
-     *         the human's turn.
+     * i.e., {@code col} was full before, then {@code null} will be
+     * returned.
+     * @throws IllegalMoveException     The game is already over, or it is not
+     *                                  the human's turn.
      * @throws IllegalArgumentException The provided column {@code col} is
-     *         invalid, i.e., not found on the grid.
+     *                                  invalid, i.e., not found on the grid.
      */
     Board move(int col);
 
@@ -57,8 +57,8 @@ public interface Board extends Cloneable {
      * is returned, which is a copy of {@code this} with the move executed.
      *
      * @return A new board with the move executed.
-     * @throws IllegalMoveException The game is already over, or it is not the
-     *         the machine's turn.
+     * @throws IllegalMoveException The game is already over, or it is not
+     *                              the machine's turn.
      * @throws InterruptedException {@link Thread#interrupt()} was called on the
      *         executing thread. Thus, the execution stops prematurely.
      */
@@ -83,7 +83,7 @@ public interface Board extends Cloneable {
      * Checks if the game state is won.
      *
      * @return The winner or {@code null} in case of a tie or if the game is
-     *         not finished yet.
+     * not finished yet.
      */
     Player getWinner();
 
@@ -92,11 +92,11 @@ public interface Board extends Cloneable {
      * i.e., a witness of victory. The left lower corner has the smallest
      * coordinates. Should only be called if {@link #getWinner()} returns a
      * value unequal {@code null}. Coordinates are 2-tuples of rows x columns.
-     *
+     * <p>
      * The result may not be unique!
      *
-     * @throws IllegalStateException There is no winner available.
      * @return The list of coordinates.
+     * @throws IllegalStateException There is no winner available.
      */
     Collection<Coordinates2D> getWitness();
 
