@@ -44,7 +44,7 @@ public class Node {
      * @param index the index where the child will be set.
      */
     public void setChild(Node child, int index) {
-        if (index > children.length) {
+        if (index > children.length || index < 0) {
             throw new IllegalArgumentException("Index out of bounds");
         }
         this.children[index] = child;
@@ -104,14 +104,15 @@ public class Node {
      * @return the index of the maximum value between all child nodes.
      */
     private int getIndexOfMaxValue() {
-        int maxIndex = 0;
-        for (int i = 1; i < children.length; i++) {
-            if (children[i] != null
-                    && children[i].evaluation > children[maxIndex].evaluation) {
-                maxIndex = i;
+        int maxValue = getMaxValueOfChildren();
+        int index = -1;
+        for (int i = 0; i < children.length; i++) {
+            if (children[i] != null && maxValue == children[i].evaluation) {
+                index = i;
+                break;
             }
         }
-        return maxIndex;
+        return index;
     }
 
     /**
