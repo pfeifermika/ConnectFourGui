@@ -2,9 +2,9 @@ package connectfour.model;
 
 
 /**
- * Models a Node in a 7-ary game tree.
+ * Models a Node in a n-ary game tree.
  * Implements methods to set children of this node and a method to get
- * the best possible move of the subtree
+ * the index with the maximum evaluation value.
  * of this node using the minmax algorithm.
  */
 public class Node {
@@ -22,19 +22,21 @@ public class Node {
     /**
      * Contains all the possible children of this node.
      */
-    private final Node[] children = new Node[Board.COLS];
+    private final Node[] children;
 
     /**
      * Creates a new Node with given height and evaluation value.
      * The evaluation value is initially set to the evaluation value of the
      * corresponding GameState.
      *
-     * @param height     the height of the node inside the game tree.
-     * @param evaluation the evaluation of this node.
+     * @param height           the height of the node in the game tree.
+     * @param evaluation       the evaluation of this node.
+     * @param numberOfChildren the number of children this node has.
      */
-    public Node(int height, int evaluation) {
+    public Node(int height, int evaluation, int numberOfChildren) {
         this.height = height;
         this.evaluation = evaluation;
+        children = new Node[numberOfChildren];
     }
 
     /**
@@ -52,13 +54,13 @@ public class Node {
 
     /**
      * First sets the evaluation of all nodes in the Tree.
-     * Then returns the index of the leftmost children
+     * Then returns the index of the leftmost child
      * with the highest evaluation.
      * This index corresponds to the column of the best possible move.
      *
      * @return the index of the leftmost children with the highest evaluation
      */
-    public int getBestMove() {
+    public int getIndexOfMaxChild() {
         setEvaluations(true);
         return this.getIndexOfMaxValue();
     }
@@ -74,8 +76,7 @@ public class Node {
      * <p>
      * The extremum is chosen depending on the height of the node and therefore
      * depends on the player to move. This is an implementation of the
-     * minimax algorithm to maximise the evaluation for the player whose turn it
-     * is in the root node.
+     * minimax algorithm to maximise the evaluation in the root node.
      *
      * @param max when true the max child value is used,
      *            when false the min child value.

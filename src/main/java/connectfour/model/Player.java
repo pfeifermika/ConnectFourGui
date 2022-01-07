@@ -9,12 +9,14 @@ public enum Player {
      * Human player.
      */
     HUMAN("X"),
+
     /**
-     * Computer player.
+     * Machine player.
      */
-    COMPUTER("O"),
+    MACHINE("O"),
+
     /**
-     * Neither human nor computer.
+     * Neither human nor machine.
      */
     TIE(".");
 
@@ -33,10 +35,10 @@ public enum Player {
      * @param player the player.
      * @return the opposite to the given player.
      */
-    public static Player getOtherPlayer(Player player) {
+    public static Player oppositePlayer(Player player) {
         if (player == HUMAN) {
-            return COMPUTER;
-        } else if (player == COMPUTER) {
+            return MACHINE;
+        } else if (player == MACHINE) {
             return HUMAN;
         } else {
             return TIE;

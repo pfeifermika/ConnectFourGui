@@ -1,0 +1,88 @@
+TESTCASES:
+    -witness when game is not over
+    -printing the board
+
+
+    -produce a tie:
+        -witness
+        -print
+        -move
+
+
+Testcase 1:
+
+    -difficulty set to -1 or to 6
+    -printing the board
+    -print witness
+    -switch player from machine to human and from human to machine
+    -moving after game is over
+
+
+    > Task :Shell.main()
+    connect4> move 1
+    connect4> print
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    X . . O . . .
+    connect4> switch
+    connect4> print
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . O . . .
+    connect4> move 2
+    connect4> move 3
+    connect4> print
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . O . . .
+    . . . O . . .
+    . X X O . . .
+    connect4> level 2
+    connect4> level -1
+    Error! Level has to be between 1 and 5.
+    connect4> level 0
+    Error! Level has to be between 1 and 5.
+    connect4> level 6
+    Error! Level has to be between 1 and 5.
+    connect4> level 5
+    connect4> move 4
+    connect4> move 2
+    connect4> print
+    . . . . . . .
+    . . . . . . .
+    . . . X . . .
+    . . . O . . .
+    . X . O O . .
+    . X X O O . .
+    connect4> move 3
+    connect4> m 3
+    connect4> print
+    . . . . . . .
+    . . . . . . .
+    . . X X . . .
+    . . O O . . .
+    . X X O O . .
+    . X X O O O .
+    connect4> move 2
+    Sorry! Machine wins.
+    connect4> print
+    . . . . . . .
+    . . . . . . .
+    . O X X . . .
+    . X O O . . .
+    . X X O O . .
+    . X X O O O .
+    connect4> w
+    (1, 5), (2, 4), (3, 3), (4, 2)
+    connect4> move 3
+    Error! The game is over!
+    connect4> quit
+
+Testcase 2:
