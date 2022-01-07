@@ -1,19 +1,10 @@
-TESTCASES:
-    -witness when game is not over
-    -printing the board
-
-
-    -produce a tie:
-        -witness
-        -print
-        -move
-
+TESTS:
 
 Testcase 1:
 
-    -difficulty set to -1 or to 6
-    -printing the board
-    -print witness
+    -testing difficulty set to -1 or to 6
+    -testing to print the board
+    -print witness after game is won with a diagonal down witness
     -switch player from machine to human and from human to machine
     -moving after game is over
 
@@ -86,3 +77,343 @@ Testcase 1:
     connect4> quit
 
 Testcase 2:
+
+    -Testing the case of a tie:
+        -witness after game is over with tie
+        -printing the board again
+        -move after game is finished with tie
+
+
+    > Task :Shell.main()
+    connect4> m 4
+    connect4> m 3
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . O . . .
+    . . X X O . .
+    connect4> m 5
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . O . . .
+    . . . O X . .
+    . . X X O . .
+    connect4> m 4
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . X . . .
+    . . . O . . .
+    . . . O X . .
+    . O X X O . .
+    connect4> m 3
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . X . . .
+    . . O O . . .
+    . . X O X . .
+    . O X X O . .
+    connect4> m 5
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . X O . .
+    . . O O X . .
+    . . X O X . .
+    . O X X O . .
+    connect4> m 4
+    connect4> p
+    . . . . . . .
+    . . . X . . .
+    . . . X O . .
+    . . O O X . .
+    . O X O X . .
+    . O X X O . .
+    connect4> m 7
+    connect4> p
+    . . . . . . .
+    . . . X . . .
+    . . . X O . .
+    . O O O X . .
+    . O X O X . .
+    . O X X O . X
+    connect4> m 2
+    connect4> p
+    . . . . . . .
+    . . . X . . .
+    . X O X O . .
+    . O O O X . .
+    . O X O X . .
+    . O X X O . X
+    connect4> m 1
+    connect4> p
+    . . . . . . .
+    . . O X . . .
+    . X O X O . .
+    . O O O X . .
+    . O X O X . .
+    X O X X O . X
+    connect4> m 3
+    connect4> p
+    . . X . . . .
+    . . O X . . .
+    . X O X O . .
+    . O O O X . .
+    O O X O X . .
+    X O X X O . X
+    connect4> m 1
+    connect4> p
+    . . X O . . .
+    . . O X . . .
+    . X O X O . .
+    X O O O X . .
+    O O X O X . .
+    X O X X O . X
+    connect4> m 2
+    connect4> p
+    . . X O . . .
+    . X O X O . .
+    . X O X O . .
+    X O O O X . .
+    O O X O X . .
+    X O X X O . X
+    connect4> m 5
+    connect4> p
+    . O X O X . .
+    . X O X O . .
+    . X O X O . .
+    X O O O X . .
+    O O X O X . .
+    X O X X O . X
+    connect4> m 1
+    connect4> p
+    . O X O X . .
+    O X O X O . .
+    X X O X O . .
+    X O O O X . .
+    O O X O X . .
+    X O X X O . X
+    connect4> m 1
+    connect4> p
+    X O X O X . .
+    O X O X O . .
+    X X O X O . .
+    X O O O X . .
+    O O X O X . O
+    X O X X O . X
+    connect4> m 7
+    connect4> p
+    X O X O X . .
+    O X O X O . .
+    X X O X O . O
+    X O O O X . X
+    O O X O X . O
+    X O X X O . X
+    connect4> m 6
+    connect4> p
+    X O X O X . .
+    O X O X O . .
+    X X O X O . O
+    X O O O X . X
+    O O X O X O O
+    X O X X O X X
+    connect4> m 6
+    connect4> p
+    X O X O X . .
+    O X O X O . .
+    X X O X O O O
+    X O O O X X X
+    O O X O X O O
+    X O X X O X X
+    connect4> m 6
+    connect4> p
+    X O X O X O .
+    O X O X O X .
+    X X O X O O O
+    X O O O X X X
+    O O X O X O O
+    X O X X O X X
+    connect4> m 7
+    Nobody wins. Tie.
+    connect4> w
+    Error! The game is not won by any player!
+    connect4> m 3
+    Error! The game is over!
+    connect4> p
+    X O X O X O O
+    O X O X O X X
+    X X O X O O O
+    X O O O X X X
+    O O X O X O O
+    X O X X O X X
+    connect4> quit
+
+
+Testcase 3:
+
+        -try to print witness when game is not over
+        -print witness horizontal
+        -move column out of bounds -1 and 10
+        -move column is full
+        -test help
+
+
+    > Task :Shell.main()
+    connect4> m 4
+    connect4> m 2
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . O . . .
+    . X O X . . .
+    connect4> m 4
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . X . . .
+    . . O O . . .
+    . X O X . . .
+    connect4> witness
+    Error! The game is not won by any player!
+    connect4> m 1
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . X . . .
+    . O O O . . .
+    X X O X . . .
+    connect4> m 7
+    Sorry! Machine wins.
+    connect4> wi
+    (2, 1), (2, 2), (2, 3), (2, 4)
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . X . . .
+    O O O O . . .
+    X X O X . . X
+    connect4> new
+    connect4> move -1
+    Error! The column is out of bounds
+    connect4> m 0
+    Error! The column is out of bounds
+    connect4> m 10
+    Error! The column is out of bounds
+    connect4> l 1
+    connect4> m 4
+    connect4> m 4
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . . . . .
+    . . . X . . .
+    . . . O . . .
+    . . O X . . .
+    connect4> m 4
+    connect4> p
+    . . . . . . .
+    . . . . . . .
+    . . . X . . .
+    . . . X . . .
+    . . O O . . .
+    . . O X . . .
+    connect4> m 4
+    connect4> p
+    . . . . . . .
+    . . . X . . .
+    . . . X . . .
+    . . O X . . .
+    . . O O . . .
+    . . O X . . .
+    connect4> m 3
+    connect4> p
+    . . . . . . .
+    . . . X . . .
+    . . X X . . .
+    . . O X . . .
+    . . O O . . .
+    . . O X O . .
+    connect4> m 3
+    connect4> p
+    . . . . . . .
+    . . X X . . .
+    . . X X . . .
+    . . O X . . .
+    . . O O O . .
+    . . O X O . .
+    connect4> m 3
+    connect4> p
+    . . X . . . .
+    . . X X . . .
+    . . X X . . .
+    . . O X O . .
+    . . O O O . .
+    . . O X O . .
+    connect4> m 3
+    Error! The column is already full!
+    connect4> help
+    Commands:
+    - new:     Starts a new game
+    - level l: Sets the difficulty to 'l' (default is 4)
+               Only difficulties from 1 to 5 are supported.
+    - switch:  Switches the starting player and starts a new game.
+    - move c:  Drops a token in the column 'c'.
+               c has to be an integer between 0 and 7
+    - witness: Prints out the coordinates of a winning group.
+               Only usable, when the game is won by a player.
+    - print:   Prints the current board to the console.
+    - help:    Prints out this help text.
+    - quit:    Terminates the program.
+    connect4> m 4
+    Congratulations! You won.
+    connect4> witness
+    (3, 4), (4, 4), (5, 4), (6, 4)
+    connect4> p
+    . . X X . . .
+    . . X X . . .
+    . . X X . . .
+    . . O X O . .
+    . . O O O . .
+    . . O X O . .
+    connect4> quit
+
+
+
+Testcase 4:
+
+        test level with different wrong inputs
+        test move with different wrong inputs
+
+        > Task :Shell.main()
+        connect4> n
+        connect4> move eins
+        Error! Invalid Arguments!
+        connect4> move .
+        Error! Invalid Arguments!
+        connect4> move
+        Error! Invalid Arguments!
+        connect4>
+        Error! Invalid command!
+        connect4> level eins
+        Error! Level has to be a number!
+        connect4> level
+        Error! Wrong command format.
+        connect4> level .
+        Error! Level has to be a number!
+        connect4> ziehe 1
+        Error! Invalid command!
+        connect4> l1
+        Error! Wrong command format.
+        connect4> m1
+        Error! Invalid Arguments!
+        connect4> quit
