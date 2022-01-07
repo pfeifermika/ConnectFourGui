@@ -72,11 +72,6 @@ public class GameState implements Board {
     private Collection<Coordinates2D> witness = Collections.emptySet();
 
     /**
-     * The machine's evaluation of the current state.
-     */
-    private int evaluation;
-
-    /**
      * Arrays containing the count of connected groups either player has
      * respectively, where the count of n sized groups is saved at index n - 2.
      */
@@ -151,7 +146,7 @@ public class GameState implements Board {
         }
 
         // creating the game tree
-        Node root = new Node(level, evaluation, COLS);
+        Node root = new Node(level, 0, COLS);
         buildSubtree(this, root, level - 1);
 
         int col = root.getIndexOfMaxChild();
@@ -166,9 +161,9 @@ public class GameState implements Board {
 
     /**
      * Inserts a token of the given player into the given column.
-     * Immediately evaluates the board,
+     * Immediately counts the groups,
      * because this instance is being treated as immutable,
-     * therefore after inserting a token no changes to the evaluation can occur.
+     * therefore after inserting a token no changes to the groups can occur.
      *
      * @param col    the column, the token gets inserted into starting from 0.
      * @param player the player whose token gets inserted.
@@ -404,7 +399,6 @@ public class GameState implements Board {
         copy.level = level;
         copy.firstPlayer = firstPlayer;
         copy.witness = new TreeSet<>(witness);
-        copy.evaluation = evaluation;
         copy.humanGroups = Arrays.copyOf(humanGroups, humanGroups.length);
         copy.machineGroups
                 = Arrays.copyOf(machineGroups, machineGroups.length);
