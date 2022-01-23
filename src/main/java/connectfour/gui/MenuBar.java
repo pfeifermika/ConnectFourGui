@@ -1,6 +1,7 @@
 package connectfour.gui;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class MenuBar extends JPanel {
 
@@ -9,7 +10,7 @@ public class MenuBar extends JPanel {
     JButton btnQuit;
 
 
-    MenuBar(){
+    MenuBar() {
         super();
         btnNew = new JButton("New");
         btnSwitch = new JButton("Switch");
@@ -18,9 +19,27 @@ public class MenuBar extends JPanel {
         add(btnNew);
         add(btnSwitch);
         add(btnQuit);
+
+        btnQuit.addActionListener(e -> {
+            ConnectFourWindow window
+                    = (ConnectFourWindow) SwingUtilities.getWindowAncestor(MenuBar.this);
+            window.quitButtonPressed();
+        });
+
+        btnNew.addActionListener(e -> {
+            ConnectFourWindow window
+                    = (ConnectFourWindow) SwingUtilities.getWindowAncestor(MenuBar.this);
+            window.newButtonPressed();
+        });
+
+        btnSwitch.addActionListener(e -> {
+            ConnectFourWindow window
+                    = (ConnectFourWindow) SwingUtilities.getWindowAncestor(MenuBar.this);
+            window.switchButtonPressed();
+        });
+
+
     }
-
-
 
 
 }

@@ -135,7 +135,7 @@ public class GameState implements Board {
      * @throws IllegalMoveException The game is already over, or it is not
      *                              the machine's turn.
      */
-    public Board machineMove() {
+    public Board machineMove() throws InterruptedException {
         if (firstPlayer == null) {
             firstPlayer = Player.MACHINE;
         }
@@ -198,7 +198,13 @@ public class GameState implements Board {
      * @param parent    the parent node
      * @param depth     the depth of the subtree
      */
-    private void buildSubtree(GameState gameState, Node parent, int depth) {
+    private void buildSubtree(
+            GameState gameState,
+            Node parent,
+            int depth) throws InterruptedException {
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
+        }
         if (depth < 0 || gameState == null) {
             return;
         }

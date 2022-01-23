@@ -26,11 +26,14 @@ public class Token extends JPanel {
         position = pPosition;
         player = Player.TIE;
         isWitness = false;
+        setBackground(Color.BLUE);
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                updatePlayer(Player.HUMAN);
+                ConnectFourWindow window
+                        = (ConnectFourWindow) SwingUtilities.getWindowAncestor(Token.this);
+                window.tokenClicked(position);
             }
         });
 
@@ -38,12 +41,10 @@ public class Token extends JPanel {
 
     public void updatePlayer(Player player){
         this.player = player;
-        repaint();
     }
 
     public void changeWitness(){
         this.isWitness = !this.isWitness;
-        repaint();
     }
 
 
@@ -61,9 +62,12 @@ public class Token extends JPanel {
         int width = g.getClipBounds().width;
         int radius = Math.min(height, (int) (height * TOKEN_SIZE)) / 2;
 
+        /*
         //paint the background
         g2.setColor(Color.BLUE);
         g2.fillRect(0,0,width,height);
+
+         */
 
         //select tokens color
         switch (player) {
