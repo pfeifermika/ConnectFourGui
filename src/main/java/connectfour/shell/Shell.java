@@ -21,6 +21,7 @@ import java.util.TreeSet;
  * @deprecated
  * No longer used, could still work but no guarantees. Use {@link connectfour.Main} instead to start the programm.
  */
+@Deprecated
 public final class Shell {
 
     /**
