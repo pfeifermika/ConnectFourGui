@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
-
 /**
  * Represents a state of a game of ConnectFour.
  * <p>
@@ -29,7 +28,7 @@ public class GameState implements Board {
     /**
      * The maximum difficulty setting for the machine.
      */
-    private static final int MAX_LEVEL = 5;
+    public static final int MAX_LEVEL = 7;
 
     /**
      * Contains the starting coordinates used to calculate the groups.
@@ -62,7 +61,7 @@ public class GameState implements Board {
     /**
      * The player to move.
      */
-    private Player firstPlayer;
+    private Player playerToMove;
 
     /**
      * The collection containing possible witnesses.
@@ -99,19 +98,19 @@ public class GameState implements Board {
      *                                  invalid, i.e. not found on the grid.
      */
     public Board move(int col) {
-        if (firstPlayer == null) {
-            firstPlayer = Player.HUMAN;
+        if (playerToMove == null) {
+            playerToMove = Player.HUMAN;
         }
 
         if (isGameOver()) {
             throw new IllegalMoveException("The game is over!");
-        } else if (firstPlayer != Player.HUMAN) {
+        } else if (playerToMove != Player.HUMAN) {
             throw new IllegalMoveException("Its not your turn!");
         } else if (col < 0 || col > COLS - 1) {
             throw new IllegalArgumentException("Column out of bounds!");
         } else {
             GameState newBoard = (GameState) clone();
-            newBoard.firstPlayer = Player.MACHINE;
+            newBoard.playerToMove = Player.MACHINE;
 
             if (!newBoard.insertToken(col, Player.HUMAN)) {
                 newBoard = null;
@@ -136,12 +135,12 @@ public class GameState implements Board {
      *                              the machine's turn.
      */
     public Board machineMove() throws InterruptedException {
-        if (firstPlayer == null) {
-            firstPlayer = Player.MACHINE;
+        if (playerToMove == null) {
+            playerToMove = Player.MACHINE;
         }
         if (isGameOver()) {
             throw new IllegalMoveException("The game is over!");
-        } else if (firstPlayer != Player.MACHINE) {
+        } else if (playerToMove != Player.MACHINE) {
             throw new IllegalMoveException("It's not the machine's turn");
         }
 
@@ -152,9 +151,9 @@ public class GameState implements Board {
         int col = root.getIndexOfMaxChild();
 
         GameState newBoard = (GameState) clone();
-        newBoard.firstPlayer = Player.HUMAN;
+        newBoard.playerToMove = Player.HUMAN;
         if (!newBoard.insertToken(col, Player.MACHINE)) {
-            newBoard = null;
+            throw new IllegalMoveException();
         }
         return newBoard;
     }
@@ -198,23 +197,20 @@ public class GameState implements Board {
      * @param parent    the parent node
      * @param depth     the depth of the subtree
      */
-    private void buildSubtree(
-            GameState gameState,
-            Node parent,
-            int depth) throws InterruptedException {
+    private void buildSubtree(GameState gameState, Node parent, int depth)
+            throws InterruptedException {
         if (Thread.interrupted()) {
             throw new InterruptedException();
-        }
-        if (depth < 0 || gameState == null) {
+        } else if (depth < 0 || gameState == null) {
             return;
         }
 
         for (int i = 0; i < COLS; i++) {
             GameState newGameState = (GameState) gameState.clone();
 
-            if (newGameState.insertToken(i, newGameState.firstPlayer)) {
-                newGameState.firstPlayer
-                        = Player.oppositePlayer(newGameState.firstPlayer);
+            if (newGameState.insertToken(i, newGameState.playerToMove)) {
+                newGameState.playerToMove
+                        = Player.oppositePlayer(newGameState.playerToMove);
                 Node child = new Node(
                         depth, newGameState.evaluateBoard(depth), COLS);
                 parent.setChild(child, i);
@@ -251,7 +247,7 @@ public class GameState implements Board {
 
         int r = 0;
         if (getWinner() == Player.MACHINE
-                && firstPlayer == Player.MACHINE
+                && playerToMove == Player.MACHINE
                 && depth == level - 1) {
             r = 5000000;
         }
@@ -403,7 +399,7 @@ public class GameState implements Board {
         assert copy != null;
         copy.board = boardCopy;
         copy.level = level;
-        copy.firstPlayer = firstPlayer;
+        copy.playerToMove = playerToMove;
         copy.witness = new TreeSet<>(witness);
         copy.humanGroups = Arrays.copyOf(humanGroups, humanGroups.length);
         copy.machineGroups
@@ -494,8 +490,8 @@ public class GameState implements Board {
      *
      * @return The player who makes the initial move.
      */
-    public Player getFirstPlayer() {
-        return firstPlayer;
+    public Player getPlayerToMove() {
+        return playerToMove;
     }
 
     /**

@@ -18,6 +18,8 @@ import java.util.TreeSet;
 /**
  * Utility class, managing user input and console output, to play a game of
  * connect four.
+ * @deprecated
+ * No longer used, could still work but no guarantees. Use {@link connectfour.Main} instead to start the programm.
  */
 public final class Shell {
 

@@ -45,4 +45,3 @@ public record Coordinates2D(int row, int col)
         return 0;
     }
 }
-

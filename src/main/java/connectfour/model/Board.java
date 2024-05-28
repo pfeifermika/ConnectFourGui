@@ -33,7 +33,7 @@ public interface Board extends Cloneable {
      *
      * @return The player who makes the initial move.
      */
-    Player getFirstPlayer();
+    Player getPlayerToMove();
 
     /**
      * Executes a human move. This method does not change the state of this
